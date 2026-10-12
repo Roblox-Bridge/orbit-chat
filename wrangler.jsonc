@@ -12,7 +12,7 @@
     {
       "binding": "DB",
       "database_name": "orbit-chat-db",
-      "database_id": "REPLACE_WITH_YOUR_D1_DATABASE_ID",
+      "database_id": "670e4f0a-3741-4acd-b70c-17a7d4b2b0f2",
       "migrations_dir": "migrations"
     }
   ],
