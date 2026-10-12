@@ -614,6 +614,7 @@ async function handleCreateConversation(request, env) {
   }, 201);
 }
 
+
 async function handleHistory(request, env) {
   const auth = await requireSession(request, env);
 
@@ -626,24 +627,53 @@ async function handleHistory(request, env) {
     return json({ error: "Invalid conversation." }, 400);
   }
 
-  if (!await isParticipant(env, id, auth.user.id)) {
+  const participant = await isParticipant(env, id, auth.user.id);
+
+  if (!participant) {
     return json({ error: "Conversation not found." }, 404);
   }
 
-  const room = env.CHAT_ROOM.getByName(id);
+  try {
+    if (!env.CHAT_ROOM) {
+      console.error("Orbit Chat: CHAT_ROOM binding is missing.");
 
-  const response = await room.fetch(
-    "https://room.internal/history"
-  );
+      return json({
+        error: "Chat service is not configured. Check the server binding.",
+      }, 503);
+    }
 
-  return new Response(response.body, {
-    status: response.status,
-    headers: {
-      "Content-Type": "application/json; charset=utf-8",
-      "Cache-Control": "no-store",
-    },
-  });
+    const room = env.CHAT_ROOM.getByName(id);
+
+    const response = await room.fetch(
+      "https://room.internal/history"
+    );
+
+    if (!response.ok) {
+      console.error("Orbit Chat history returned an error:", {
+        status: response.status,
+        conversationId: id,
+      });
+    }
+
+    return new Response(response.body, {
+      status: response.status,
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "no-store",
+      },
+    });
+  } catch (error) {
+    console.error("Orbit Chat history failed:", {
+      conversationId: id,
+      error: error?.stack || String(error),
+    });
+
+    return json({
+      error: "Could not load conversation history.",
+    }, 500);
+  }
 }
+
 
 async function handleWebSocket(request, env) {
   const auth = await requireSession(request, env);
