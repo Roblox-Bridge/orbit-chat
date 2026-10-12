@@ -1,1 +1,16 @@
-
+{
+  "name": "orbit-chat",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:create": "wrangler d1 create orbit-chat-db",
+    "db:migrate:local": "wrangler d1 migrations apply orbit-chat-db --local",
+    "db:migrate:remote": "wrangler d1 migrations apply orbit-chat-db --remote"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}
