@@ -804,10 +804,6 @@ export class ChatRoom {
         created_at INTEGER NOT NULL
       )
     `);
-
-    this.ctx.storage.setWebSocketAutoResponse(
-      new WebSocketRequestResponsePair("ping", "pong")
-    );
   }
 
   async fetch(request) {
