@@ -939,8 +939,12 @@ export default {
       // Critical: preserve status 101 and its WebSocket object.
       return secureHeaders(response);
     
-    } catch (error) {
-      console.error("Orbit Chat request failed:", error);
+        } catch (error) {
+      console.error("Orbit Chat request failed:", {
+        path: new URL(request.url).pathname,
+        method: request.method,
+        error: error?.stack || String(error),
+      });
 
       return secureHeaders(json({
         error: "Server error. Please try again.",
